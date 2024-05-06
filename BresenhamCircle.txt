@@ -1,0 +1,110 @@
+// Bresenham Circle Drawing
+#include <iostream>
+#include <GL/glut.h>
+using namespace std;
+int w = 600;
+int h = 400;
+void coordinate();
+void myInit();
+void MyDisplay();
+void bresenhamCircle(int x, int y, int r);
+int main(int a, char **v)
+{
+    glutInit(&a, v);
+    glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
+    glutInitWindowPosition(0, 0);
+    glutInitWindowSize(h, w);
+    glutCreateWindow("Bresenham Circle");
+    myInit();
+    glutDisplayFunc(MyDisplay);
+    glutMainLoop();
+    return 0;
+}
+void myInit()
+{
+    glPointSize(3.0);
+    glClearColor(1.0, 1.0, 1.0, 0);
+    glColor3f(1.0, 0.0, 0.0);
+    gluOrtho2D(-w / 2, w / 2, -h / 2, h / 2);
+}
+void coordinate()
+{
+    glBegin(GL_LINES);
+    glVertex2d(-w / 2, 0);
+    glVertex2d(w / 2, 0);
+    glVertex2d(0, -h / 2);
+    glVertex2d(0, h / 2);
+    glEnd();
+    glFlush();
+}
+void MyDisplay()
+{
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    coordinate();
+    /* Cooncentric Circle
+    bresenhamCircle(0,0,50);
+    bresenhamCircle(0,0,100);*/
+    bresenhamCircle(0, 0, 150);
+    /* Flower Pattern
+    bresenhamCircle(0,0,48);
+    bresenhamCircle(50,80,48);
+    bresenhamCircle(-50,80,48);
+    bresenhamCircle(-50,-80,48);
+    bresenhamCircle(50,-80,48);
+    bresenhamCircle(100,0,48);
+    bresenhamCircle(-100,0,48);*/
+    glFlush();
+}
+void bresenhamCircle(int x, int y, int r)
+{
+    int xi = 0;
+    int yi = r;
+    int pk = 3 - 2 * r;
+    int pi = pk;
+    while (xi <= yi)
+    {
+        glBegin(GL_POINTS);
+        glVertex2f(x + xi, y + yi);
+        glVertex2f(x + yi, y + xi);
+        glVertex2f(x + yi, y - xi);
+        glVertex2f(x + xi, y - yi);
+        glVertex2f(x - xi, y - yi);
+        glVertex2f(x - yi, y - xi);
+        glVertex2f(x - yi, y + xi);
+        glVertex2f(x - xi, y + yi);
+        glEnd();
+        glFlush();
+        if (pi < 0)
+        {
+            xi = xi + 1;
+            yi = yi;
+            pi = pi + 4 * xi + 6;
+        }
+        else
+        {
+            xi = xi + 1;
+            yi = yi - 1;
+            pi = pi + 4 * (xi - yi) + 10;
+        }
+    }
+}
+
+
+// Writeup
+// Step 1 : Assign the starting point coordinates (X 0 , Y 0 ) as X 0 = 0 , Y 0 = R.
+// Step 2 : Calculate the value of initial decision parameter P 0 as P 0 = 3 – 2R.
+// Step 3 : Suppose the current point is (X k , Y k ) and the next point is (X k+1 , Y k+1 ). Find the next points
+// of the first quadrant depending on the value of decision parameter P k .
+// P k &lt;0 (East) P k &gt;=0 (Southeast)
+// X k+1 = X k + 1
+// Y k+1 = Y k
+
+// X k+1 = X k + 1
+// Y k+1 = Y k - 1
+// P k+1 = P k + 4*X k + 6 P k+1 = P k + 4*X k -
+// 4*Y k +10
+
+// If the given centre point (X 0 , Y 0 ) is not (0,0) then do the following and
+// plot the point :
+// X = X c + X 0 and Y = Y c + Y 0 .(Here X c and Y c are current coordinates.
+// Step 5 : Keep repeating step 3 and step 4 until X &lt;= Y.

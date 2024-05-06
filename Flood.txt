@@ -1,0 +1,117 @@
+// Flood Fill
+#include <iostream>
+#include <math.h>
+#include <time.h>
+#include <GL/glut.h>
+using namespace std;
+void delay(float ms)
+{
+    clock_t goal = ms + clock();
+    while (goal > clock())
+        ;
+}
+void init()
+{
+    glClearColor(0.0, 0.0, 0.0, 0.0);
+    glMatrixMode(GL_PROJECTION);
+    gluOrtho2D(0, 640, 0, 480);
+}
+void flood_it(int x, int y, float *fillColor, float *ic)
+{
+    float color[3];
+    glReadPixels(x, y, 1.0, 1.0, GL_RGB, GL_FLOAT, color);
+    if (color[0] == ic[0] && color[1] == ic[1] && color[2] == ic[2])
+    {
+        glColor3f(fillColor[0], fillColor[1], fillColor[2]);
+        glBegin(GL_POINTS);
+        glVertex2i(x, y);
+        glEnd();
+        glFlush();
+        flood_it(x - 2, y, fillColor, ic);
+        flood_it(x + 1, y, fillColor, ic);
+        flood_it(x, y + 1, fillColor, ic);
+        flood_it(x, y - 2, fillColor, ic);
+    }
+}
+void mouse(int btn, int state, int x, int y)
+{
+    y = 480 - y;
+    if (btn == GLUT_LEFT_BUTTON)
+    {
+        if (state == GLUT_DOWN)
+        {
+            float intCol[] = {255, 255, 0}; // Any color can be added
+            float color[] = {255, 255, 0};
+            glReadPixels(x, y, 1.0, 1.0, GL_RGB, GL_FLOAT, intCol);
+            flood_it(x, y, color, intCol);
+        }
+    }
+}
+void world()
+{
+    glPointSize(2);
+    glClear(GL_COLOR_BUFFER_BIT);
+    glColor3f(1, 0, 0);
+    glBegin(GL_POLYGON);
+    glVertex2i(15, 10);
+    glVertex2i(155, 200);
+    glVertex2i(305, 10);
+    glEnd();
+    glColor3f(0, 1, 0);
+    glBegin(GL_POLYGON);
+    glVertex2i(300, 398);
+    glVertex2i(150, 198);
+    glVertex2i(450, 198);
+    glEnd();
+    glColor3f(0, 0, 1);
+    glBegin(GL_POLYGON);
+    glVertex2i(300, 10);
+    glVertex2i(600, 10);
+    glVertex2i(450, 200);
+    glEnd();
+    glFlush();
+}
+int main(int argc, char **argv)
+{
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
+    glutInitWindowSize(640, 480);
+    glutInitWindowPosition(200, 200);
+    glutCreateWindow("Flood Fill");
+    glutDisplayFunc(world);
+    glutMouseFunc(mouse);
+    init();
+    glutMainLoop();
+    return 0;
+}
+
+
+// Writeup
+// In this method, a point or seed which is inside region is selected. This point is called a seed point.
+// Then four connected approaches or eight connected approaches is used to fill with specified
+// color.
+// The flood fill algorithm has many characters similar to boundary fill. But this method is more
+// suitable for filling multiple colors boundary. When boundary is of many colors and interior is to
+// be filled with one color we use this algorithm.
+// In fill algorithm, we start from a specified interior point (x, y) and reassign all pixel values are
+// currently set to a given interior color with the desired color. Using either a 4-connected or 8-
+
+// connected approaches, we then step through pixel positions until all interior points have been
+// repainted.
+
+// Algorithm:
+
+// Procedure floodfill (x, y,fill_ color, old_color: integer)  
+// if (getpixel (x, y)=old_color) 
+//    {  
+//  setpixel (x, y, fill_color);  
+//     fill (x+1, y, fill_color, old_color);  
+//      fill (x-1, y, fill_color, old_color);  
+//     fill (x, y+1, fill_color, old_color);  
+//     fill (x, y-1, fill_color, old_color);  
+//      }  
+// }  
+// Disadvantage:
+// 1. Very slow algorithm
+// 2. May be fail for large polygons
+// 3. Initial pixel required more knowledge about surrounding pixels.

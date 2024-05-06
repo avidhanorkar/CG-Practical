@@ -1,0 +1,251 @@
+// 2D-Transformation
+#include <iostream>
+#include <GL/glut.h>
+#include <cmath>
+using namespace std;
+/* run this program using the console pauser or add your own getch, system("pause") or input loop */
+
+int n, arr[100][2], tarr[100][2], sx, sy, ch, degree, tx, ty, choice;
+
+void drawTpolygon()
+{
+    glColor3ub(0, 0, 255);
+    glBegin(GL_LINE_LOOP);
+    for (int i = 0; i < n; i++)
+    {
+        glVertex2i(tarr[i][0], tarr[i][1]);
+    }
+    glEnd();
+}
+
+void scaling()
+{
+
+    for (int i = 0; i < n; i++)
+    {
+        tarr[i][0] = arr[i][0] * sx;
+        tarr[i][1] = arr[i][1] * sy;
+    }
+    drawTpolygon();
+}
+
+void rotation()
+{
+    glColor3ub(255, 0, 0);
+    glPointSize(5);
+    glBegin(GL_POINTS);
+    glVertex2i(tx, ty);
+    glEnd();
+    float rad = ((degree) * (3.14)) / 180;
+    for (int i = 0; i < n; i++)
+    {
+        tarr[i][0] = arr[i][0] * cos(rad) - arr[i][1] * sin(rad) - tx * cos(rad) + ty * sin(rad) + tx;
+        tarr[i][1] = arr[i][0] * sin(rad) + arr[i][1] * cos(rad) - tx * sin(rad) - ty * cos(rad) + ty;
+        cout << tarr[i][0] << " " << tarr[i][1] << endl;
+    }
+    drawTpolygon();
+}
+
+void reflection()
+{
+    if (choice == 1)
+    {
+        for (int i = 0; i < n; i++)
+        {
+            tarr[i][0] = arr[i][0];
+            tarr[i][1] = -arr[i][1];
+        }
+    }
+    else if (choice == 2)
+    {
+        for (int i = 0; i < n; i++)
+        {
+            tarr[i][0] = -arr[i][0];
+            tarr[i][1] = arr[i][1];
+        }
+    }
+    else if (choice == 3)
+    {
+        for (int i = 0; i < n; i++)
+        {
+            tarr[i][0] = -arr[i][0];
+            tarr[i][1] = -arr[i][1];
+        }
+    }
+    else if (choice == 4)
+    {
+        for (int i = 0; i < n; i++)
+        {
+            tarr[i][0] = arr[i][1];
+            tarr[i][1] = arr[i][0];
+        }
+    }
+    else if (choice == 5)
+    {
+        for (int i = 0; i < n; i++)
+        {
+            tarr[i][0] = -arr[i][1];
+            tarr[i][1] = -arr[i][0];
+        }
+    }
+    drawTpolygon();
+}
+
+void display()
+{
+    glClear(GL_COLOR_BUFFER_BIT);
+    glLineWidth(2);
+    glColor3ub(255, 255, 255);
+    glBegin(GL_LINES);
+    glVertex2i(-900, 0);
+    glVertex2i(900, 0);
+    glEnd();
+    glBegin(GL_LINES);
+    glVertex2f(0, 900);
+    glVertex2f(0, -900);
+    glEnd();
+    glColor3ub(255, 0, 0);
+    glBegin(GL_LINE_LOOP);
+    for (int i = 0; i < n; i++)
+    {
+        glVertex2i(arr[i][0], arr[i][1]);
+    }
+    glEnd();
+
+    if (ch == 1)
+    {
+        scaling();
+    }
+    else if (ch == 2)
+    {
+        rotation();
+    }
+    else if (ch == 3)
+    {
+        reflection();
+    }
+    glFlush();
+}
+
+void Init()
+{
+    glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
+    glutInitWindowSize(900, 900);
+    glutInitWindowPosition(500, 100);
+    glutCreateWindow("bres");
+    glClearColor(0.0, 0, 0, 0);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluOrtho2D(-900, 900, -900, 900);
+}
+
+int main(int argc, char **argv)
+{
+    cout << "WELCOME TO 2D TRANSFORMATION:" << endl;
+    cout << "Enter number of vertices : ";
+    cin >> n;
+    if (n > 2 || n < 100)
+    {
+        for (int i = 0; i < n; i++)
+        {
+            cout << "(X" << (i + 1) << ",Y" << (i + 1) << ") : ";
+            cin >> arr[i][0] >> arr[i][1];
+        }
+        cout << "CHOOSE YOUR TRANSFORMATION:" << endl;
+        cout << "1.Scaling\n2.Rotation\n3.Reflection" << endl;
+        cout << "Enter your choice : ";
+        cin >> ch;
+        if (ch == 1)
+        {
+            cout << "Enter Sx : ";
+            cin >> sx;
+            cout << "Enter Sy : ";
+            cin >> sy;
+        }
+        else if (ch == 2)
+        {
+            int flag;
+            cout << "Enter Coordinates of arbitrary point:" << endl;
+            cout << "X : ";
+            cin >> tx;
+            cout << "Y : ";
+            cin >> ty;
+            cout << "Enter Degree of Rotation : ";
+            cin >> degree;
+            cout << "1.Clockwise\n2.Anticlockwise\nEnter your choice : ";
+            cin >> flag;
+            if (flag == 1)
+            {
+                degree = -degree;
+            }
+        }
+        else if (ch == 3)
+        {
+            cout << "Choose Type of Reflection!!!" << endl;
+            cout << "About\n1.X-axis\n2.Y-axis\n3.Origin\n4.X=Y axis\n5.X=-Y axis\nEnter Your Choice: ";
+            cin >> choice;
+        }
+    }
+    else
+    {
+        cout << "Input is invalid!!!";
+    }
+    glutInit(&argc, argv);
+    Init();
+    glutDisplayFunc(display);
+    glutMainLoop();
+    return 0;
+}
+
+
+// Writeup
+// Scaling:
+// It is used to alter or change the size of objects. The change is done using scaling
+// factors. There are two scaling factors, i.e. S x  in x direction S y  in y-direction. If the
+// original position is x and y. Scaling factors are S x  and S y  then the value of
+// coordinates after scaling will be x 1  and y 1 .
+// If the picture to be enlarged to twice its original size then S x  = S y  =2. If S x and S y  are
+// not equal then scaling will occur but it will elongate or distort the picture.
+// If scaling factors are less than one, then the size of the object will be reduced. If
+// scaling factors are higher than one, then the size of the object will be enlarged.
+// If S x and S y are equal it is also called as Uniform Scaling. If not equal then called as
+// Differential Scaling. If scaling factors with values less than one will move the
+// object closer to coordinate origin, while a value higher than one will move
+// coordinate position farther from origin.
+// Rotation:
+// It is a process of changing the angle of the object. Rotation can be clockwise or
+// anticlockwise. For rotation, we have to specify the angle of rotation and rotation
+// point. Rotation point is also called a pivot point. It is print about which object is
+// rotated.
+// Types of Rotation:
+
+// 1. Anticlockwise
+// 2. Counterclockwise
+// The positive value of the pivot point (rotation angle) rotates an object in a counter-
+// clockwise (anti-clockwise) direction.
+// The negative value of the pivot point (rotation angle) rotates an object in a
+// clockwise direction.
+// When the object is rotated, then every point of the object is rotated by the same
+// angle.
+// Rotation about an arbitrary point: If we want to rotate an object or point about
+// an arbitrary point, first of all, we translate the point about which we want to rotate
+// to the origin. Then rotate point or object about the origin, and at the end, we again
+// translate it to the original place. We get rotation about an arbitrary point.
+// Types of Reflection:
+// 1. Reflection about the x-axis
+// 2. Reflection about the y-axis
+// 3. Reflection about an axis perpendicular to xy plane and passing through the
+// origin
+// 4. Reflection about line y=x
+// Reflection:
+// A reflection is a transformation that produces a mirror image of an object
+// relative to an axis of reflection.
+// The mirror image can be either about x-axis or y-axis. The object is rotated
+// by180°.
+// Types of Reflection:
+// 1. Reflection about the x-axis
+// 2. Reflection about the y-axis
+// 3. Reflection about an axis perpendicular to xy plane and passing through the
+// origin
+
+// 4. Reflection about line y=x

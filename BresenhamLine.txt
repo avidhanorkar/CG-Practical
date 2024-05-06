@@ -1,0 +1,195 @@
+// Bresenham Line Drawing
+#include <GL/glut.h>
+#include <iostream>
+using namespace std;
+int x1;
+int Y1;
+int x2;
+int y2;
+int choice;
+
+void displayline()
+{
+    int deltax = x2 - x1;
+    int deltay = y2 - Y1;
+    int pk = (2 * deltay) - deltax;
+    glBegin(GL_POINTS);
+    glColor3f(1, 0, 0);
+    glVertex2i(x1, Y1);
+    glEnd();
+    switch (choice)
+    {
+    case 1:
+        for (int i = 0; i < deltax; i++)
+        {
+            if (pk < 0)
+            {
+                glBegin(GL_POINTS);
+                glColor3f(1, 0, 0);
+                x1 = x1 + 1;
+                glVertex2i(x1, Y1);
+                glEnd();
+                pk = pk + (2 * deltay);
+            }
+            else
+            {
+                glBegin(GL_POINTS);
+                glColor3f(1, 0, 0);
+                x1 = x1 + 1;
+                Y1 = Y1 + 1;
+                glVertex2i(x1, Y1);
+                glEnd();
+                pk = pk + (2 * (deltay - deltax));
+            }
+        }
+        break;
+    case 2:
+        for (int i = 0; i < deltax; i++)
+        {
+            if (pk < 0)
+            {
+                x1 = x1 + 1;
+                if (i % 8 == 0)
+                {
+                    glBegin(GL_POINTS);
+                    glColor3f(1, 0, 0);
+
+                    glVertex2i(x1, Y1);
+                    glEnd();
+                }
+                pk = pk + (2 * deltay);
+            }
+            else
+            {
+                x1 = x1 + 1;
+                Y1 = Y1 + 1;
+                if (i % 8 == 0)
+                {
+                    glBegin(GL_POINTS);
+                    glColor3f(1, 0, 0);
+
+                    glVertex2i(x1, Y1);
+                    glEnd();
+                }
+                pk = pk + (2 * (deltay - deltax));
+            }
+        }
+        break;
+    case 3:
+        for (int i = 0; i < deltax; i++)
+        {
+            if (pk < 0)
+            {
+                x1 = x1 + 1;
+                if (i % 16 <= 8)
+                {
+                    glBegin(GL_POINTS);
+                    glColor3f(1, 0, 0);
+
+                    glVertex2i(x1, Y1);
+                    glEnd();
+                }
+                pk = pk + (2 * deltay);
+            }
+            else
+            {
+                x1 = x1 + 1;
+                Y1 = Y1 + 1;
+                if (i % 16 <= 8)
+                {
+                    glBegin(GL_POINTS);
+                    glColor3f(1, 0, 0);
+
+                    glVertex2i(x1, Y1);
+                    glEnd();
+                }
+                pk = pk + (2 * (deltay - deltax));
+            }
+        }
+        break;
+    }
+    glBegin(GL_LINES);
+    glColor3f(1, 1, 1);
+    glVertex2f(0, 500);
+    glVertex2f(0, -500);
+    glVertex2f(-500, 0);
+    glVertex2f(500, 0);
+    glEnd();
+    glFlush();
+}
+
+void myInit()
+{
+    glClearColor(0, 0, 0, 0);
+    gluOrtho2D(-500, 500, -500, 500);
+}
+
+int main(int argc, char **argv)
+{
+    cout << "Enter the value x1=" << endl;
+    cin >> x1;
+    cout << "Enter the value y1=" << endl;
+    cin >> Y1;
+    cout << "Enter the value x2=" << endl;
+    cin >> x2;
+    cout << "Enter the value y2=" << endl;
+    cin >> y2;
+    cout << "1.Simple" << endl;
+    cout << "2.Dotted" << endl;
+    cout << "3.Dash" << endl;
+    cout << "Enter your choice:" << endl;
+    cin >> choice;
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_RGB | GLUT_SINGLE);
+    glutInitWindowSize(640, 480);
+    glutInitWindowPosition(100, 100);
+    glutCreateWindow("Bresenham");
+    myInit();
+    glutDisplayFunc(displayline);
+    glutMainLoop();
+    return 0;
+}
+
+// Writeup
+// The Bresenham’s algorithm is another incremental scan conversion algorithm. The big
+// advantage of this algorithm is that, it uses only integer calculations. Moving across the x axis
+// in unit intervals and at each step choose between two different y coordinates.
+//  A decision Parameter P k is used to calculate weather the pixel (Xk+1, Y k +1) or (X k +1, Y k ) is to
+// be plotted and is based on the error or the difference between the actual slope of the line and
+// the slope of the pixels being drawn.
+
+//  The Bresenham’s Algorithm for positive slope is explained below step by step.
+//  Step 1 − Get the input of two end points (X 0 , Y 0 )and (X 1 , Y 1 ).
+//  Step 2 − Calculate the difference between two end points.
+//  dx = X 1 - X 0;
+//  dy = Y 1 - Y 0;
+
+//  Step 3 −Initialize the decision parameter.
+//  P k = 2*dy – dx;
+
+//  Step 4 − Plot the co-ordinate (X, Y) initially equal to (X 0 , Y 0 ) ,on the screen and increment the
+// X co-ordinate. The Y co-ordinate is incremented depending upon the decision parameter. If
+// decision parameter is greater than or equal to 0, also increment the Y co-ordinate. Update the
+// decision parameter accordingly. Repeat this step for dx times.
+
+//  for (int k = 0; k&lt;dx; k++) {
+//  plotpixel (X,Y);
+//  X=X+1;
+//  if(P k &gt;= 0) {
+//  Y = Y + 1;
+//  P k = P k + 2*(dy) - 2*(dx);
+//  } else {
+//  P k = P k + 2*(dy);
+//  }
+//  }
+//  Advantages
+// 1. It is easy to implement, fast and incremental.
+// 2. It executes faster but less fast than DDA Algorithm.
+// 3. The points generated by this algorithm are moreaccurate than DDA
+// Algorithm.
+// 4. Uses Fixed Points only.
+//  Disadvantage
+// 1. Though it improves the accuracy of generated pointsbut still the resulted line
+// is not smooth.
+// 2. This Algorithm is for basic line drawing and cannot handle diminishing
+// jaggedness.

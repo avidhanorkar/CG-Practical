@@ -1,0 +1,79 @@
+// Koch Curve
+#include <GL/glut.h>
+#include <math.h>
+GLfloat oldx = -0.5, oldy = 0.5;
+void drawkoch(GLfloat dir, GLfloat len, int iter)
+{
+    GLdouble dirRad = 0.0174533 * dir;
+    GLfloat newX = oldx + len * cos(dirRad);
+    float newY = oldy + len * sin(dirRad);
+    if (iter == 0)
+    {
+        glVertex2f(oldx, oldy);
+        glVertex2f(newX, newY);
+        oldx = newX;
+        oldy = newY;
+    }
+    else
+    {
+        iter--;
+        // draw the four parts of the side _/\_
+        drawkoch(dir, len, iter);
+        dir += 60.0;
+        drawkoch(dir, len, iter);
+        dir -= 120.0;
+        drawkoch(dir, len, iter);
+        dir += 60.0;
+        drawkoch(dir, len, iter);
+    }
+}
+
+void mydisplay()
+{
+    glClear(GL_COLOR_BUFFER_BIT);
+    glBegin(GL_LINES);
+    glColor3f(1.0, 0.0, 0.0);
+    drawkoch(0.0, 0.05, 3);
+    drawkoch(-120.0, 0.05, 3);
+    drawkoch(120.0, 0.05, 3);
+    glEnd();
+    glFlush();
+}
+
+int main(int argc, char **argv)
+{
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
+    glutInitWindowSize(500, 500);
+    glutInitWindowPosition(0, 0);
+    glutCreateWindow("Koch Snowflake");
+
+    glutDisplayFunc(mydisplay);
+    glutMainLoop();
+}
+
+
+// Writeup
+// Koch Curve:
+// The Koch curve is created by dividing each line segment into thirds and replacing the
+// middle segment with an equilateral triangle. Each iteration of the Koch curve produces a
+// curve that is self-similar to the previous ones.
+// Step1:
+// Draw an equilateral triangle. You can draw it with a compass or protractor, or just eyeball it if
+// you don’t want to spend too much time drawing the snowflake.
+//  It’s best if the length of the sides are divisible by 3, because of the nature of this fractal. This
+// will become clear in the next few steps.
+
+// Step2:
+// Divide each side in three equal parts. This is why it is handy to have the sides divisible by
+// three.
+
+// Step3:Draw an equilateral triangle on each middle part. Measure the length of the middle third
+// to know the length of the sides of these new triangles.
+
+// Step4: Divide each outer side into thirds. You can see the 2nd generation of triangles covers a
+// bit of the first. These three line segments shouldn’t be parted in three.
+
+// Step5:
+// Draw an equilateral triangle on each middle part.
+//  Note how you draw each next generation of parts that are one 3rd of the mast one.

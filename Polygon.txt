@@ -1,0 +1,380 @@
+// Polygon Clipping
+// 5. Polygon Clipping
+#include <stdio.h>
+#include <GL/gl.h>
+#include <GL/glu.h>
+#include <GL/glut.h>
+#include <math.h>
+typedef struct
+{
+    float x;
+    float y;
+} PT;
+int n;
+/*void drawpolygon(PT[],int);
+void left(PT,PT[],PT[]);
+void right(PT,PT[],PT[]);
+void top(PT,PT[],PT[]);
+void bottom(PT,PT[],PT[]);*/
+int i, j;
+PT d, p1, p2, p[20], pi1, pi2, pp[20];
+void left()
+{
+    i = 0;
+    j = 0;
+    for (i = 0; i < n; i++)
+    {
+        if (p[i].x < p1.x && p[i + 1].x >= p1.x) // Outside to Inside
+        {
+            if (p[i + 1].x - p[i].x != 0)
+            {
+                pp[j].y = (p[i + 1].y - p[i].y) / (p[i + 1].x - p[i].x) * (p1.x - p[i].x) + p[i].y;
+            }
+            else
+            {
+                pp[j].y = p[i].y;
+            }
+            pp[j].x = p1.x;
+            j++;
+            pp[j].x = p[i + 1].x;
+            pp[j].y = p[i + 1].y;
+            j++;
+        }
+        if (p[i].x >= p1.x && p[i + 1].x >= p1.x) // Inside to Inside
+        {
+            pp[j].y = p[i + 1].y;
+            pp[j].x = p[i + 1].x;
+            j++;
+        }
+        if (p[i].x >= p1.x && p[i + 1].x < p1.x) // Inside to Outside
+        {
+            if (p[i + 1].x - p[i].x != 0)
+            {
+
+                pp[j].y = (p[i + 1].y - p[i].y) / (p[i + 1].x - p[i].x) * (p1.x - p[i].x) + p[i].y;
+            }
+            else
+            {
+                pp[j].y = p[i].y;
+            }
+            pp[j].x = p1.x;
+            j++;
+        }
+    }
+    for (i = 0; i < j; i++)
+    {
+        p[i].x = pp[i].x;
+        p[i].y = pp[i].y;
+    }
+    p[i].x = pp[0].x;
+    p[i].y = pp[0].y;
+    n = j;
+}
+void right()
+{
+    i = 0;
+    j = 0;
+    for (i = 0; i < n; i++)
+    {
+        if (p[i].x > p2.x && p[i + 1].x <= p2.x) // Outside to Inside
+        {
+            if (p[i + 1].x - p[i].x != 0)
+            {
+                pp[j].y = (p[i + 1].y - p[i].y) / (p[i + 1].x - p[i].x) * (p2.x - p[i].x) + p[i].y;
+            }
+            else
+            {
+                pp[j].y = p[i].y;
+            }
+            pp[j].x = p2.x;
+            j++;
+            pp[j].x = p[i + 1].x;
+            pp[j].y = p[i + 1].y;
+            j++;
+        }
+        if (p[i].x <= p2.x && p[i + 1].x <= p2.x) // Inside to Inside
+        {
+            pp[j].y = p[i + 1].y;
+            pp[j].x = p[i + 1].x;
+            j++;
+        }
+        if (p[i].x <= p2.x && p[i + 1].x > p2.x) // Inside to Outside
+        {
+            if (p[i + 1].x - p[i].x != 0)
+            {
+                pp[j].y = (p[i + 1].y - p[i].y) / (p[i + 1].x - p[i].x) * (p2.x - p[i].x) + p[i].y;
+            }
+            else
+
+            {
+                pp[j].y = p[i].y;
+            }
+            pp[j].x = p2.x;
+            j++;
+        }
+    }
+    for (i = 0; i < j; i++)
+    {
+        p[i].x = pp[i].x;
+        p[i].y = pp[i].y;
+    }
+    p[i].x = pp[0].x;
+    p[i].y = pp[0].y;
+    n = j;
+}
+void top()
+{
+    i = 0;
+    j = 0;
+    for (i = 0; i < n; i++)
+    {
+        if (p[i].y > p2.y && p[i + 1].y <= p2.y) // Outside to Inside
+        {
+            if (p[i + 1].y - p[i].y != 0)
+            {
+                pp[j].x = (p[i + 1].x - p[i].x) / (p[i + 1].y - p[i].y) * (p2.y - p[i].y) + p[i].x;
+            }
+            else
+            {
+                pp[j].x = p[i].x;
+            }
+            pp[j].y = p2.y;
+            j++;
+            pp[j].x = p[i + 1].x;
+            pp[j].y = p[i + 1].y;
+            j++;
+        }
+        if (p[i].y <= p2.y && p[i + 1].y <= p2.y) // Inside to Inside
+        {
+            pp[j].y = p[i + 1].y;
+            pp[j].x = p[i + 1].x;
+            j++;
+        }
+        if (p[i].y <= p2.y && p[i + 1].y > p2.y) // Inside to Outside
+        {
+
+            if (p[i + 1].y - p[i].y != 0)
+            {
+                pp[j].x = (p[i + 1].x - p[i].x) / (p[i + 1].y - p[i].y) * (p2.y - p[i].y) + p[i].x;
+            }
+            else
+            {
+
+                pp[j].x = p[i].x;
+            }
+            pp[j].y = p2.y;
+            j++;
+        }
+    }
+    for (i = 0; i < j; i++)
+    {
+        p[i].x = pp[i].x;
+        p[i].y = pp[i].y;
+    }
+    p[i].x = pp[0].x;
+    p[i].y = pp[0].y;
+    n = j;
+}
+
+void bottom()
+{
+    i = 0;
+    j = 0;
+    for (i = 0; i < n; i++)
+    {
+        if (p[i].y < p1.y && p[i + 1].y >= p1.y) // Outside to Inside
+        {
+            if (p[i + 1].y - p[i].y != 0)
+            {
+                pp[j].x = ((p[i + 1].x - p[i].x) / (p[i + 1].y - p[i].y)) * (p1.y - p[i].y) + p[i].x;
+            }
+            else
+            {
+                pp[j].x = p[i].x;
+            }
+            pp[j].y = p1.y;
+            j++;
+            pp[j].x = p[i + 1].x;
+            pp[j].y = p[i + 1].y;
+            j++;
+        }
+        if (p[i].y >= p1.y && p[i + 1].y >= p1.y) // Inside to Inside
+        {
+            pp[j].x = p[i + 1].x;
+            pp[j].y = p[i + 1].y;
+            j++;
+        }
+        if (p[i].y >= p1.y && p[i + 1].y < p1.y) // Inside to Outside
+        {
+            if (p[i + 1].y - p[i].y != 0)
+            {
+                pp[j].x = ((p[i + 1].x - p[i].x) / (p[i + 1].y - p[i].y)) * (p1.y - p[i].y) + p[i].x;
+            }
+
+            else
+            {
+                pp[j].x = p[i].x;
+            }
+            pp[j].y = p1.y;
+            j++;
+        }
+    }
+    for (i = 0; i < j; i++)
+    {
+        p[i].x = pp[i].x;
+        p[i].y = pp[i].y;
+    }
+    p[i].x = pp[0].x;
+    p[i].y = pp[0].y;
+    n = j;
+}
+
+void drawpolygon()
+{
+    glColor3f(1.0, 0.0, 0.0);
+    for (i = 0; i < n - 1; i++)
+    {
+        glBegin(GL_LINES);
+        glVertex2d(p[i].x, p[i].y);
+        glVertex2d(p[i + 1].x, p[i + 1].y);
+        glEnd();
+    }
+    glBegin(GL_LINES);
+    glVertex2d(p[i].x, p[i].y);
+    glVertex2d(p[0].x, p[0].y);
+    glEnd();
+}
+void myMouse(int button, int state, int x, int y)
+{
+    if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
+    {
+        glClear(GL_COLOR_BUFFER_BIT);
+        glBegin(GL_LINE_LOOP);
+        glVertex2f(p1.x, p1.y);
+        glVertex2f(p2.x, p1.y);
+        glVertex2f(p2.x, p2.y);
+        glVertex2f(p1.x, p2.y);
+        glEnd();
+        left();
+        right();
+        top();
+        bottom();
+        drawpolygon();
+    }
+    glFlush();
+}
+
+void display(void)
+{
+    // float x,y,dx,dy,length;
+    glClear(GL_COLOR_BUFFER_BIT);
+    glColor3f(0.4, 1.0, 0.0);
+    glBegin(GL_LINE_LOOP);
+    glVertex2f(p1.x, p1.y);
+    glVertex2f(p2.x, p1.y);
+    glVertex2f(p2.x, p2.y);
+    glVertex2f(p1.x, p2.y);
+    glEnd();
+    drawpolygon();
+    glFlush();
+}
+void init(void)
+{
+    glClearColor(0.0, 0.0, 0.0, 0.0);
+    gluOrtho2D(0, 500, 0, 500);
+}
+int main(int argc, char **argv)
+{
+    printf("Enter coordinates(left ,bottom)");
+    printf("Enter x_coordinates:");
+    scanf("%f", &p1.x);
+    printf("Enter y_coordinates:");
+    scanf("%f", &p1.y);
+    printf("Enter coordinates(right,top)");
+    printf("Enter x_coordinates:");
+    scanf("%f", &p2.x);
+    printf("Enter y_coordinates:");
+    scanf("%f", &p2.y);
+    printf("\nEnter the no of vertex:");
+    scanf("%d", &n);
+    for (i = 0; i < n; i++)
+    {
+        printf("\nEnter Coordinates of vertex:");
+        printf("%d", i + 1);
+        printf("\nEnter x cordinates:");
+        scanf("%f", &p[i].x);
+        printf("\nEnter y cordinates:");
+        scanf("%f", &p[i].y);
+    }
+    p[i].x = p[0].x;
+    p[i].y = p[0].y;
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
+    glutInitWindowSize(640, 480);
+    glutInitWindowPosition(0, 0);
+    glutCreateWindow("Sutherland Hodgeman Polygon Clipping Algorithm ");
+    init();
+    // glClear(GL_COLOR_BUFFER_BIT);
+    glutDisplayFunc(display);
+
+    glutMouseFunc(myMouse);
+    glFlush();
+    glutMainLoop();
+    return 0;
+}
+
+// Writeup
+// Sutherland Hodgman Polygon Clipping
+//  It is used for clipping polygons. It works by extending each line of the convex clip polygon in
+// turn and selecting only vertices from the subject polygon those are on the visible side.
+// An algorithm that clips a polygon must deal with many different cases. The case is particularly
+// note worthy in that the concave polygon is clipped into two separate polygons. All in all, the task
+// of clipping seems rather complex. Each edge of the polygon must be tested against each edge of
+// the clip rectangle; new edges must be added, and existing edges must be discarded, retained, or
+// divided.  The algorithm begins with an input list of all vertices in the subject polygon. Next, one
+// side of the clip polygon is extended infinitely in both directions, and the path of the subject
+// polygon is traversed. Vertices from the input list are inserted into an output list if they lie on the
+// visible side of the extended clip polygon line, and new vertices are added to the output list where
+// the subject polygon path crosses the extended clip polygon line. 
+//              This process is repeated iteratively for each clip polygon side, using the output list from
+// one stage as the input list for the next. Once all sides of the clip polygon have been processed,
+// the final generated list of vertices defines a new single polygon that is entirely visible. Note that
+// if the subject polygon was concave at vertices outside the clipping polygon, the new polygon
+// may have coincident (i.e. overlapping) edges – this is acceptable for rendering, but not for other
+// applications such as computing shadows.
+//  The following example illustrate a simple case of polygon clipping
+
+// Sutherland and Hodgman&#39;s polygon-clipping algorithm uses a divide-and-conquer strategy: It
+// solves a series of simple and identical problems that, when combined, solve the overall problem.
+// The simple problem is to clip a polygon against a single infinite clip edge. Four clip edges, each
+// defining one boundary of the clip rectangle, successively clip a polygon against a clip rectangle.
+// Note the difference between this strategy for a polygon and the Cohen-Sutherland algorithm for
+// clipping a line: The polygon clipper clips against four edges in succession, whereas the line
+// clipper tests the outcode to see which edge is crossed, and clips only when necessary.
+// Steps of Sutherland-Hodgman&#39;s polygon-clipping algorithm
+
+//  Polygons can be clipped against each edge of the window one at a time. Windows/edge
+// intersections, if any, are easy to find since the X or Y coordinates are already known.
+//  Vertices which are kept after clipping against one window edge are saved for clipping
+// against the remaining edges.
+//  Note that the number of vertices usually changes and will often increases.
+//  We are using the Divide and Conquer approach
+//          After clipped by the right and bottom clip boundaries.
+//  
+
+// The original polygon and the clip rectangle.
+
+//  
+
+// Clipping polygons would seem to be quite complex. A single polygon can actually be split into
+// multiple polygons .The Sutherland-Hodgman algorithm clips a polygon against all edges of the
+// clipping region in turn. The algorithm steps from vertex to vertex, adding 0, 1, or 2 vertices to
+// the output list at each step.
+
+// The Sutherland-Hodgeman Polygon-Clipping Algorithms clips a given polygon successively
+// against the edges of the given clip-rectangle. These clip edges are denoted with e1, e2, e3, and
+// e4, here. The closed polygon is represented by a list of its vertices (v1 to vn; Since we got 15
+// vertices in the example shown above, vn = v15.).
+// Clipping is computed successively for each edge. The output list of the previous clipping run is
+// used as the input list for the next clipping run. 1st run: Clip edge: e1; input list = {v1, v2, ..., v14,
+// v15}, the given polygon.

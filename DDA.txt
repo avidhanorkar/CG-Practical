@@ -1,0 +1,175 @@
+// DDA Line Drawing
+#include <GL/glut.h>
+#include <iostream>
+using namespace std;
+int x1;
+int Y1;
+int x2;
+int y2;
+int choice;
+
+int sign(float delta)
+{
+    if (delta < 0)
+    {
+        return -1;
+    }
+    else
+    {
+        return 1;
+    }
+}
+void displayline(void)
+{
+    glClear(GL_COLOR_BUFFER_BIT);
+    glPointSize(2);
+    // calculated dx and dy
+    int dx = x2 - x1;
+    int dy = y2 - Y1;
+    int length;
+    // calculate the length
+    if (abs(dx) >= abs(dy))
+    {
+        length = dx;
+    }
+    else
+    {
+        length = dy;
+    }
+    float deltaX = (float)dx / length;
+    float deltaY = (float)dy / length;
+    float x = x1;
+    float y = Y1;
+    switch (choice)
+    {
+    case 1:
+        for (int i = 0; i <= length; i++)
+        {
+            glBegin(GL_POINTS);
+            glColor3f(1, 0, 0);
+            glVertex2i(x, y);
+            glEnd();
+            x = x + sign(deltaX);
+            y = y + sign(deltaY);
+        }
+        break;
+    case 2:
+        for (int i = 0; i <= length; i++)
+        {
+            if (i % 8 == 0)
+            {
+                glBegin(GL_POINTS);
+                glColor3f(1, 0, 0);
+                glVertex2i(x, y);
+                glEnd();
+            }
+            x = x + sign(deltaX);
+            y = y + sign(deltaY);
+        }
+        break;
+    case 3:
+        for (int i = 0; i <= length; i++)
+        {
+            if (i % 16 <= 8)
+            {
+                glBegin(GL_POINTS);
+                glColor3f(1, 0, 0);
+                glVertex2i(x, y);
+                glEnd();
+            }
+            x = x + sign(deltaX);
+            y = y + sign(deltaY);
+        }
+        break;
+    }
+
+    glBegin(GL_LINES);
+    glColor3f(1, 1, 1);
+    glVertex2f(0, 500);
+    glVertex2f(0, -500);
+    glVertex2f(-500, 0);
+    glVertex2f(500, 0);
+    glEnd();
+    glFlush();
+}
+
+void myInit(void)
+{
+    glClearColor(0.0, 0.0, 0.0, 0.0);
+
+    gluOrtho2D(-500, 500, -500, 500);
+}
+int main(int argc, char **argv)
+{
+    cout << "Enter the value x1=" << endl;
+    cin >> x1;
+    cout << "Enter the value y1=" << endl;
+    cin >> Y1;
+    cout << "Enter the value x2=" << endl;
+    cin >> x2;
+    cout << "Enter the value y2=" << endl;
+    cin >> y2;
+
+    cout << "1.Simple" << endl;
+    cout << "2.Dotted" << endl;
+    cout << "3.Dash" << endl;
+    cout << "Enter your choice:" << endl;
+    cin >> choice;
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_RGB | GLUT_SINGLE);
+    glutInitWindowSize(640, 480);
+    glutInitWindowPosition(100, 100);
+    glutCreateWindow("DDA");
+    myInit();
+    glutDisplayFunc(displayline);
+    glutMainLoop();
+    return 0;
+}
+
+
+
+
+
+// Writeup
+// The DDA algorithm is easy to implement and understand, making it suitable for educational
+// purposes and simple line drawing applications.
+//  Digital Differential Analyzer (DDA) algorithm is the simple line generation algorithm which
+// is explained step by step here.
+//  Step 1 − Get the input of two end points (X0, Y0) and (X1, Y1).
+//  Step 2 − Calculate the difference between two end points.
+//  dx = X 1 - X 0
+//  dy = Y 1 - Y 0
+
+//  Step 3 – Calculate the length of the line using the formula. The length is the absolute greatest
+// value among dx and dy.
+
+//  if(absolute(dx)&gt; absolute(dy))
+//  length= absolute(dx);
+//  else
+//  length= absolute(dy);
+//  Step 4 − Calculate the increment Δx and Δy in x-coordinate and y-coordinate.
+//  Δx = (float) dx / length;
+//  Δy = (float) dy / length;
+
+//  Step 5 – Plot the first point according to the formulaX= X 0 + 0.5 * Sign(Δx) and Y= Y 0 + 0.5
+// * Sign(Δy). The Sign function returns 1 ifour value is greater than 0, if it is less than 0 it
+// returns -1 and if it is 0 it returns 0;
+//  X= X0 + 0.5 * Sign(Δx);
+//  Y= Y0 + 0.5 * Sign(Δy);
+//  plotpixel (Round(x),Round(y));
+
+//  Step 6 − Plot the pixel by successfully incrementing x and y coordinates for length times and
+// complete the drawing of the line.
+//  for (intk=0;k&lt;length;k++) {
+//  x = x +Δx;
+//  y = y +Δy;
+//  plotpixel (Round(x),Round(y));
+//  }
+//  Advantages
+// 1. DDA algorithm is relatively simple to understand and implement. It involves
+// straightforward calculations based on the slope of the line.
+// 2. Eliminates the multiplication operation
+//  Disadvantages
+// 1. Involves floating point operation for each pixel which is more expensive than
+// basic addition and subtraction calculation.
+// 2. The rounding off operation is expensive and has possibility of error.
