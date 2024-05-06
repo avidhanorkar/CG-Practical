@@ -1,0 +1,213 @@
+// Animation
+#include <GL/glut.h>
+#include <math.h>
+#include <time.h>
+#include <sys/timeb.h>
+#define ESCAPE 27
+int window;
+float rtri = 0.0f;
+// float rquad=0.0f;
+void InitGL(int Width, int Height)
+{
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f); // set window color
+    // glClearDepth(1.0);
+    /*glDepthFunc(GL_LESS);
+    glEnable(GL_DEPTH_TEST);
+    glShadeModel(GL_SMOOTH);*/
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluPerspective(45.0f, (GLfloat)Width / (GLfloat)Height, 0.1f, 100.0f);
+    glMatrixMode(GL_MODELVIEW);
+}
+float ballX = -0.5f;
+float ballY = 0.0f;
+float ballZ = 0.0f;
+void drawBall(void)
+{
+    glColor3f(1.0, 0.0, 1.0); // set the ball color
+    glTranslatef(ballX, ballY, ballZ);
+    glRotatef(ballX, ballX, ballY, ballZ);
+    glutSolidSphere(0.3, 50, 50);
+    glTranslatef(ballX + 1.5, ballY, ballZ);
+    glutSolidSphere(0.3, 50, 50);
+}
+void DrawGLScene()
+{
+    // glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT);
+    glLoadIdentity();
+    glTranslatef(rtri, 0.0f, -6.0f);
+    glBegin(GL_POLYGON);
+    glColor3f(1.0f, 0.0f, 0.0f); // set triangle color
+    glVertex3f(-1.0f, 1.0f, 0.0);
+    glVertex3f(0.4f, 1.0f, 0.0f);
+    glVertex3f(1.0f, 0.4f, 0.0f);
+    // glColor3f(0.0f,1.0f,0.0f);
+    // glVertex3f(-1.0f,1.0f,0.0);
+    // glColor3f(0.4f,0.0f,1.0f);
+    // glVertex3f(1.0f,0.4f,0.0f);
+    glEnd();
+    drawBall();
+    rtri += 0.005f;
+    if (rtri > 2)
+    {
+        rtri = -2.0f;
+    }
+    // rquad-=15.0f;
+    glutSwapBuffers();
+}
+void keyPressed(unsigned char key, int x, int y)
+{
+    if (key == ESCAPE)
+    {
+        glutDestroyWindow(window);
+        exit(0);
+    }
+}
+int main(int argc, char **argv)
+{
+    glutInit(&argc, argv);
+    // glutInitDisplayMode(GLUT_RGBA|GLUT_DOUBLE|GLUT_ALPHA|GLUT_DEPTH);
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
+    glutInitWindowSize(640, 480);
+    glutInitWindowPosition(0, 0);
+    window = glutCreateWindow("Moving Object");
+    glutDisplayFunc(DrawGLScene);
+    glutIdleFunc(DrawGLScene);
+    glutKeyboardFunc(keyPressed);
+    InitGL(640, 480);
+    glutMainLoop();
+    return (0);
+}
+
+
+// Writeup
+// Animation is defined as a series of images rapidly changing to create an
+// illusion of movement. We replace the previous image with a new image
+// which is a little bit shifted. Animation Industry is having a huge market
+// nowadays. To make an efficacious animation there are some principles to be
+// followed.
+
+// Squash and
+
+// Stretch:
+// This principle works over the physical properties that are expected to change
+// in any process. Ensuring proper squash and stretch makes our animation
+// more convincing.
+// For Example: When we drop a ball from height, there is a change in its
+
+// physical property. When the ball touches the surface, it bends slightly which
+// should be depicted in animation properly.
+
+// 1. Anticipation:
+// Anticipation works on action.Animation has broadly divided into 3
+// phases:
+
+// 1. Preparation phase
+// 2. Movement phase
+// 3. Finish
+// 1. In Anticipation, we make our audience prepare for action. It helps to
+// make our animation look more realistic.
+// For Example: Before hitting the ball through the bat, the actions of
+// batsman comes under anticipation. This are those actions in which
+// the batsman prepares for hitting the ball.
+
+// 2. Arcs:
+// In Reality, humans and animals move in arcs. Introducing the
+// concept of arcs will increase the realism. This principle of animation
+// helps us to implement the realism through projectile motion also.
+// For Example, The movement of the hand of bowler comes under
+// projectile motion while doing bowling.
+
+// 3. Slow in-Slow out:
+// While performing animation, one should always keep in mind that in
+// reality object takes time to accelerate and slow down. To make our
+// animation look realistic, we should always focus on its slow in and
+// slow out proportion.
+// For Example, It takes time for a vehicle to accelerate when it is
+// started and similarly when it stops it takes time.
+
+// 4. Appeal:
+// Animation should be appealing to the audience and must be easy to
+// understand. The syntax or font style used should be easily
+// understood and appealing to the audience. Lack of symmetry and
+// complicated design of character should be avoided.
+
+// 5. Timing:
+
+// Velocity with which object is moving effects animation a lot. The speed
+// should be handled with care in case of animation.
+// For Example, An fast-moving object can show an energetic person while a
+// slow-moving object can symbolize a lethargic person. The number of frames
+// used in a slowly moving object is less as compared to the fast-moving object.
+
+// 1. 3D Effect:
+// By giving 3D effects we can make our animation more convincing
+// and effective. In 3D Effect, we convert our object in a 3-dimensional
+// plane i.e., X-Y-Z plane which improves the realism of the object.
+// For Example, a square can give a 2D effect but cube can give a 3D
+// effect which appears more realistic.
+
+// 2. 8. Exaggeration:
+// Exaggeration deals with the physical features and emotions. In
+// Animation, we represent emotions and feeling in exaggerated form
+// to make it more realistic. If there is more than one element in a
+// scene then it is necessary to make a balance between various
+// exaggerated elements to avoid conflicts.
+
+// 3. Stagging:
+// Stagging is defined as the presentation of the primary idea, mood or
+// action. It should always be in presentable and easy to manner. The
+// purpose of defining principle is to avoid unnecessary details and
+// focus on important features only. The primary idea should always
+// be clear and unambiguous.
+
+// 4. Secondary Action:
+
+// Secondary actions are more important than primary action as they
+// represent the animation as a whole. Secondary actions support the
+// primary or main idea.
+// For Example, A person drinking a hot tea, then his facial
+// expressions, movement of hands, etc comes under the secondary
+// actions.
+
+// 5. Follow Through:
+// It refers to the action which continues to move even after the
+// completion of action. This type of action helps in the generation of
+// more idealistic animations.
+// For Example: Even after throwing a ball, the movement of hands
+// continues.
+
+// 6. Overlap:
+// It deals with the nature in which before ending the first action, the
+// second action starts.
+// For Example: Consider a situation when we are drinking Tea from
+// the right hand and holding a sandwich in the left hand. While
+// drinking a tea, our left-hand start showing movement towards the
+// mouth which shows the interference of the second action before the
+// end of the first action.
+
+// Animation includes all the visual changes on the screen of display devices. These are:
+// 1. Change of shape as shown in fig:
+
+// 2. Change in size as shown in fig:
+
+// 3. Change in color as shown in fig:
+
+// 4. Change in structure as shown in fig:
+
+// 5.Change in angle as shown in fig:
+
+// Application Areas of Animation
+// 1. Education and Training: Animation is used in school, colleges and training centers
+// for education purpose. Flight simulators for aircraft are also animation based.
+// 2. Entertainment: Animation methods are now commonly used in making motion
+// pictures, music videos and television shows, etc.
+// 3. Computer Aided Design (CAD): One of the best applications of computer animation
+// is Computer Aided Design and is generally referred to as CAD. One of the earlier
+// applications of CAD was automobile designing. But now almost all types of designing
+// are done by using CAD application, and without animation, all these work can&#39;t be
+// possible.
+// 4. Advertising: This is one of the significant applications of computer animation. The
+// most important advantage of an animated advertisement is that it takes very less space
+// and capture people attention.
